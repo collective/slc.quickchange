@@ -1,0 +1,27 @@
+Metadata-Version: 1.0
+Name: slc.quickchange
+Version: 1.0dev
+Summary: Tool to change the content of your objects
+Home-page: https://svn.syslab.com/svn/syslabcom/slc.quickchange
+Author: Syslab.com GmbH
+Author-email: info@syslab.com
+License: GPL
+Description: Introduction
+        ============
+        
+        
+        
+        Changelog
+        =========
+        
+        1.0 - Unreleased
+        ----------------
+        
+        * Initial release
+        
+        
+Keywords: change batch quickchange search replace
+Platform: UNKNOWN
+Classifier: Framework :: Plone
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
