@@ -79,7 +79,7 @@ function SRtoggleSelect() {
          action="@@search_replace"
          method="post"
          enctype="multipart/form-data"
-         xtal:attributes="action string:${here/absolute_url}/${template/getId}" >
+         tal:attributes="action string:${here/absolute_url}/@@search_replace" >
 
     <fieldset>
 
@@ -148,14 +148,14 @@ function SRtoggleSelect() {
 
 
             <tr>
-                <th>&nbsp;</th>
+                <!--th>&nbsp;</th-->
                 <th>ID</th>
             </tr>
             <tal:block repeat="line pl">
             <tr>
-                <td>
+                <!--td>
                     <input type="checkbox" name="targets:list" tal:attributes="value string:${line}" />
-                </td>
+                </td-->
                 <td>
                     <a href="" tal:attributes="href line" tal:content="line"></a>
                 </td>
