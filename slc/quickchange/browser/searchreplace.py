@@ -17,18 +17,27 @@ class SearchReplaceView(BrowserView):
     
     template = ViewPageTemplateFile('searchreplace.pt')
     
-    chnged = []
-    
+    def __init__(self, context, request):
+        super(SearchReplaceView, self).__init__(context, request)
+        self.request = request
+        self.context = context
+        self.changed = []
+        self.search_text = None
+        self.replace_text = None
+        self.recursive = False
+        self.regexp = False
+        self.search_only = True
+        self.path = None
+        
     def __call__(self):
         self.request.set('disable_border', True)
         self.search_text = self.request.get('search_text','')
         self.replace_text = self.request.get('replace_text','')
         self.recursive = self.request.get('recursive','')
         self.regexp = self.request.get('regexp','')
-        self.search_only = not not self.request.get('form.button.Search', False)
+        self.search_only = not self.request.get('form.button.Replace', False)
 
         self.path = "/".join(self.context.getPhysicalPath())
-        
 
         if not self.search_only:
             self.do_replace()
@@ -39,6 +48,7 @@ class SearchReplaceView(BrowserView):
 
     def do_replace(self):
         """ starting in the root, working through all language paths """
+        if not self.search_text: return
         context = Acquisition.aq_inner(self.context)
         portal_languages = getToolByName(context, 'portal_languages')
         langs = portal_languages.getSupportedLanguages()
