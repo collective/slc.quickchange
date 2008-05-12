@@ -1,0 +1,8 @@
+[default]
+title=QuickChange Configure Form
+
+[validators]
+
+[actions]
+action.success..Reinit=traverse_to:string:reinitTransforms
+action.failure=traverse_to:string:qc_configure_form

@@ -1,0 +1,110 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:use-macro="container/main_template/macros/master"
+    i18n:domain="plone">
+
+<body>
+
+<div metal:fill-slot="main" i18n:domain="elevateIT">
+
+    <h1 tal:content="structure python:here.title_or_id()" class="documentFirstHeading">
+    Title or id
+    </h1>
+    
+    <div metal:use-macro="here/document_actions/macros/document_actions">
+        Document actions (print, sendto etc)
+    </div>
+    
+    <div tal:content="structure here/Description" /> 
+
+<div metal:define-macro="topic_view">
+    <metal:block i18n:domain="plone" tal:define="
+                 b_start string:0;b_start request/b_start | b_start;
+                 results python:here.queryCatalog({'portal_type':'Event', 'sort_on':'start'});
+                 Batch python:modules['Products.CMFPlone'].Batch;
+                 batchsize here/getList_batchsize|site_properties/default_batchsize|python:40;
+                 global batch python:Batch(results, int(batchsize), int(b_start), orphan=1);
+                 iface_tool here/portal_interface;
+                 orderable_iface string:Products.CMFPlone.interfaces.OrderedContainer.IOrderedContainer;
+                 isOrderable python:iface_tool.objectImplements(here, orderable_iface);
+                 nosortclass python:test(isOrderable, 'nosort', '');
+                 removeHTML nocall: here/portal_utilities/removeHTML;">
+
+    <div tal:condition="not: results">
+        <p><strong i18n:translate="no_results_found"> No results match your criteria. </strong></p>
+    </div>
+                 
+    <!-- Navigation -->
+    <div metal:use-macro="here/batch_macros/macros/navigation" />
+                 
+    <table id="sortable"
+           class="listing" style="width: 100%"
+           summary="Search results for this topic"
+           tal:condition="batch">
+        <thead>
+            <tr>
+                <th id="t1" abbr="Type" i18n:attributes="abbr" i18n:domain="elevateIT" class="nosort">&nbsp;</th>
+                <th id="t2" tal:attributes="class python:nosortclass"
+                    >&nbsp;<tal:title i18n:translate="listingheader_title"
+                    >Title</tal:title>&nbsp;</th>
+                <th id="t3" tal:attributes="class python:nosortclass" i18n:domain="elevateIT"
+                    >&nbsp;<tal:type i18n:translate="listingheader_type"
+                    >Type</tal:type>&nbsp;</th>        
+                <th id="t4" tal:attributes="class python:nosortclass"
+                    >&nbsp;<tal:modified i18n:translate="listingheader_modified"
+                    >Modified</tal:modified>&nbsp;</th>
+                
+            </tr>
+        </thead>
+    
+        <tbody >
+        <metal:block tal:repeat="match batch">
+        <tr>
+        <td><img src="#" tal:attributes="src string:${portal_url}/${match/getIcon}" alt="" /></td>
+        <td>        
+               
+        <a href="#" 
+           tal:attributes="href string:${match/getURL}">
+           <span tal:define="match_title match/Title; 
+                         matchid match/getId"
+                         tal:replace="python:test(match_title.strip(), match_title, matchid)">title_or_id</span>
+        </a>
+
+        <div class="itemDescription"
+             tal:condition="match/Description"
+             tal:content="structure python:removeHTML(match.Description)">Description</div>
+        </td>   
+        <td i18n:translate="" i18n:domain="plone" tal:content="match/Type">Type</td>
+        <td nowrap="nowrap" tal:content="python:here.toPortalTime(match.ModificationDate)">Modification Date</td>
+        </tr>
+        </metal:block>
+        </tbody>
+    </table>
+
+    <!-- Navigation -->
+    <div metal:use-macro="here/batch_macros/macros/navigation" />
+
+    <metal:block tal:define="subtopics here/listSubtopics" tal:condition="subtopics">
+    <h2 i18n:translate="heading_sub_topics" i18n:domain="plone">Sub-topics</h2>
+    
+    <ul>
+        <li tal:repeat="topic subtopics">
+            <p>
+                <a href=""
+                    tal:define="topictitle python:topic.Title() or topic.getId()"
+                    tal:attributes="href topic/absolute_url"><img src="topic_icon.gif" 
+                    alt="" width="16" height="16" 
+                    tal:attributes="src string:${portal_url}/topic_icon.gif" /> <span tal:replace="topictitle" />
+                </a>
+            </p>
+        </li>
+    </ul>    
+    
+    </metal:block>
+
+    </metal:block>
+</div>
+</div>
+
+</body>
+</html>

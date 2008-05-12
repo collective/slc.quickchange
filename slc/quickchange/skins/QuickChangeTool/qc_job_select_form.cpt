@@ -1,0 +1,332 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+      
+<head>
+  <metal:ajax fill-slot="javascript_head_slot">
+    <script src="/prototype.js" type="text/javascript"></script>
+    <script src="/scriptaculous.js" type="text/javascript"></script>
+    
+    <script type="text/javascript"
+            tal:attributes="src string:$portal_url/qc_javascripts.js"></script>
+  </metal:ajax>  
+  
+  <metal:css fill-slot="css_slot">
+    <style type="text/css" media="all" 
+               tal:content="string:@import url($portal_url/qc_styledefs.css);"></style> 
+  </metal:css>    
+
+</head>
+
+<body>
+
+  <div metal:fill-slot="main">
+
+    <h1>Determine the objects to change</h1>
+      <div style="padding: 5px;" class="formHelp" i18n:domain="plone" >
+        This Wizard helps you to select the objects to be changed by Quickchange. You can select object, review your selection and manipulate it afterwards.  
+      </div>
+
+    <h2 i18n:translate="legend_qc_searchform">Step 1: How do you want to select your objects?</h2>
+    
+   <form name="edit_form"
+         action="."
+         method="post"
+         enctype="multipart/form-data"
+         tal:attributes="action string:${here/getId}/${template/getId}" >
+    
+    <fieldset>
+      <legend>
+        <span i18n:translate="legend_qc_searchform">By a Criteria Search</span>
+      </legend>
+      
+      <div class="field">
+          <input type="radio" name="select_by" value="criteria"                  
+                 tal:attributes="checked python:test(here.getSelectType()=='criteria', 'checked', '')"> 
+
+          <label>by Criteria Search</label>
+      </div>
+      
+      <div id="select-by-criteria">            
+      
+        <fieldset>
+          <legend>
+            <span i18n:translate="legend_qc_searchform">Select objects by criteria</span>
+          </legend>
+            <div class="formHelp">
+                Configure criteria using the criteria action.
+            </div>
+
+            <metal:block i18n:domain="plone" tal:define="
+                             results python:here.queryCatalog();
+                             removeHTML nocall: here/portal_utilities/removeHTML;">
+         
+            <div style="padding: 5px;" class="formHelp" i18n:domain="plone" i18n:translate="help_qc_open_search_form">
+                    <span tal:replace="python:len(results)"/> Objects found by criteria. 
+            </div>
+          
+            <p id="indicator" style="display:none; margin-top:0px;">
+              <img alt="Indicator" src="/indicator_web20_working.gif" /> Updating ...
+            </p>
+            
+            <div id="select-objects-area" style="display: none;">
+            
+                <div tal:condition="not: results">
+                    <p><strong i18n:translate="no_results_found"> No results match your criteria. </strong></p>
+                </div>
+                             
+                <table id="sortable"
+                       class="listing" style="font-size: 105%; width: 100%"
+                       summary="Search results for this topic"
+                       tal:condition="results">
+                    <thead>
+                        <tr>
+                            <th id="t1" abbr="Type" i18n:attributes="abbr" i18n:domain="elevateIT" class="nosort">&nbsp;</th>
+                            <th id="t2" 
+                                >&nbsp;<tal:title i18n:translate="listingheader_title"
+                                >Title</tal:title>&nbsp;</th>
+                            <th id="t3"  i18n:domain="elevateIT"
+                                >&nbsp;<tal:type i18n:translate="listingheader_type"
+                                >Type</tal:type>&nbsp;</th>        
+                            <th id="t4" 
+                                >&nbsp;<tal:creator i18n:translate="listingheader_creator"
+                                >Creator</tal:creator>&nbsp;</th>
+                            <th id="t5" 
+                                >&nbsp;<tal:created i18n:translate="listingheader_created"
+                                >Created</tal:created>&nbsp;</th>
+                            <th id="t6" 
+                                >&nbsp;<tal:modified i18n:translate="listingheader_modified"
+                                >Modified</tal:modified>&nbsp;</th>
+                            <th id="t7" 
+                                >&nbsp;<tal:path i18n:translate="listingheader_path"
+                                >Path</tal:path>&nbsp;</th>
+                        </tr>
+                        
+                    </thead>
+                
+                    <tbody>
+                    <metal:block tal:repeat="match results">
+                    <tr tal:on-error="string:${match/getURL}" tal:define="oddrow repeat/match/odd" 
+                        tal:attributes="class python:test(oddrow,'odd','even')">
+                    <td><img src="#" tal:attributes="src string:${portal_url}/${match/getIcon}; 
+                             alt match/Type; title match/Type " />
+                    </td>
+                    <td nowrap="nowrap">        
+                        <a href="#" 
+                           tal:attributes="href string:${match/getURL};
+                                           title python:removeHTML(match.Description)">
+                           <b tal:define="match_title python:utiltool.shortenString(match.Title, 20); 
+                                         matchid match/getId"
+                                         tal:content="python:test(match_title.strip(), match_title, matchid)">title_or_id</b>
+                        </a>
+                    </td>   
+                    <td i18n:translate="" i18n:domain="plone" tal:content="match/Type">Type</td>
+                    <td nowrap="nowrap" tal:content="python:match.Creator">Creator</td>
+                    <td nowrap="nowrap" tal:content="python:DateTime(match.CreationDate).strftime('%Y/%m/%d')">Creation Date</td>
+                    <td nowrap="nowrap" tal:content="python:DateTime(match.ModificationDate).strftime('%Y/%m/%d')">Modification Date</td>
+                    <td nowrap="nowrap" tal:content="match/getPath">Path</td>
+                    </tr>
+                    </metal:block>
+                    </tbody>
+                </table>
+                
+            </div>
+            </metal:block>            
+          </fieldset>
+        </div>
+        
+    </fieldset>    
+    
+    <fieldset>
+      <legend>
+        <span i18n:translate="legend_qc_searchform">by Script</span>
+      </legend>
+      
+      <div class="field">
+          <input type="radio" name="select_by" value="script"
+                 tal:attributes="checked python:test(here.getSelectType()=='script', 'checked', '')"> 
+          <label>by Script</label>
+      </div>
+      
+            
+      <div id="select-by-script">            
+        <fieldset>
+          <legend>
+            <span i18n:translate="legend_qc_searchform">Select objects by script</span>
+          </legend>
+          
+          <div class="formHelp">
+            Select a script from the selectors section of the QuickChangeTool. You can specify additional selector scripts in the ZMI in the subfolder "selectors" of the QuickChangeTool.
+          </div>
+              
+          <div class="field">
+            <select name="selector_script" tal:define="current context/getSelectScript">
+                <option value="" name="" 
+                        tal:attributes="selected python:test(current=='', 'selected', '')">  --- select a script ---
+                </option>
+                <option tal:repeat="o here/portal_quickchangetool_selectors/objectValues" 
+                        tal:attributes="name o/getId; value o/getId; selected python:test(current==o.getId(), 'selected', '')" 
+                        tal:content="python:'%s (%s)' % (o.getId(), o.title_or_id())" >
+                </option>
+            </select>
+          </div>          
+        </fieldset>
+      </div>
+    </fieldset>
+    
+    
+    
+    <fieldset>
+      <legend>
+        <span i18n:translate="legend_qc_searchform">by typing a manual list</span>
+      </legend>
+      <div class="field">
+          <input type="radio" name="select_by" value="manual" 
+                 tal:attributes="checked python:test(here.getSelectType()=='manual', 'checked', '')"> 
+          <label>by Manual List</label>
+      </div>
+      
+      <div id="select-by-manual">            
+          <div>
+            <fieldset>
+              <legend>
+                <span i18n:translate="legend_qc_searchform">Select objects manually</span>
+              </legend>
+              <div class="formHelp">
+                Enter the paths to the objects manually. Remember that the paths must be stated absolute from the Zope base.
+              </div>
+              
+              <div class="field">              
+              <textarea id="targets-attribute" tal:content="here/getManualTargetsText" rows="5" cols="50"></textarea>
+                <script type="text/javascript">
+                    var mytargeturl = urlcomp.join("/")+'/ajax_modifyManualTargets';
+                    new Ajax.InPlaceEditor('targets-attribute', mytargeturl, 
+                                            {rows:5,
+                                             cols:50,
+                                             loadTextUrl: urlcomp.join("/")+'/getManualTargetsText',
+                                             callback: function(form, value) { 
+                                                 $('targets-attribute').value = value;
+                                                 return 'targets=' + value; 
+                                                },
+                                             onComplete: function(transport, element) {
+                                                 $('targets-attribute').value=transport.responseText.stripTags();
+                                                 new Effect.Highlight(element, {startcolor: this.options.highlightcolor});
+                                                 }
+                                             }
+                                            );
+                </script>
+                </div>
+            </fieldset>
+          </div>
+      </div>
+    </fieldset>
+      
+
+        
+    <input type="hidden" name="form.submitted" value="1" />
+     <div class="formControls">
+      <input class="context"
+             tabindex=""
+             type="Submit"
+             name="form.button.Cancel"
+             value="Cancel"
+             tal:attributes="tabindex tabindex/next;" 
+             i18n:attributes="value" />
+
+      <input class="context"
+             tabindex=""
+             type="submit"
+             name="form.button.Next"
+             value="Next"
+             tal:attributes="tabindex tabindex/next;" 
+             i18n:attributes="value" />
+             
+
+     </div>
+     
+</form>   
+    
+    
+<!--
+    
+    
+    
+    
+    
+    
+    
+    <fieldset>
+        <legend>
+            <span i18n:translate="legend_qc_targetpool">Step 2: Make a Snapshot</span>
+        </legend>
+    
+    <div id="move-controls">
+        <div class="formHelp" i18n:domain="plone" i18n:translate="help_qc_make_snapshot">
+            Review the results from your criteria above. If you accept this selection, click on "Make a Snapshot" now to persist this set of objects into your job. You can then manually remove some of the elements from your search list.        
+        </div>
+
+     <input type="Button" id="add-results-button" value="Make a Snapshot" onClick="addAllResults()">
+    </div>
+        
+    </fieldset>
+
+           
+    <fieldset>
+        <legend>
+            <a href='javascript:return false;' onClick="PoolSlideDown();return false;"><img id="qc-arrow-down" src="/qc_arrowDown.gif"></a> 
+            <a href='javascript:return false;' onClick="PoolSlideUp(); return false;"><img id="qc-arrow-up" src="/qc_arrowUp.gif"></a> 
+            <span i18n:translate="legend_qc_targetpool">Step 3: Conrol your target object pool</span>
+        </legend>
+        
+        <div id="save-target-msg"></div>
+-->        
+            <!--input type="Button" id="reset-target-button" onClick="loadPool()" value="Reset Pool">
+            <input type="Button" id="clear-target-button" onClick="clearPool()" value="Clear Pool">
+            <input type="Button" id="save-target-button" onClick="saveTargets()" value="Save Pool"-->
+<!--        
+        <div id="selectedobjectsarea">
+        
+        <div style="padding: 5px;" class="formHelp" i18n:domain="plone" >
+                <span id="num-stored-objects" tal:content="python:len(here.getTargets())"></span> Objects currently stored in this Job. 
+        </div>
+        
+            <div id="target-objects">
+                <table id="sortable2" class="listing" style="font-size: 105%; width: 100%">
+                <thead>
+                    <tr>
+                        <th id="t1" abbr="Type" i18n:attributes="abbr" i18n:domain="elevateIT" class="nosort">&nbsp;</th>
+                        <th id="t2" 
+                            >&nbsp;<tal:title i18n:translate="listingheader_title"
+                            >Title</tal:title>&nbsp;</th>
+                        <th id="t3"  i18n:domain="elevateIT"
+                            >&nbsp;<tal:type i18n:translate="listingheader_type"
+                            >Type</tal:type>&nbsp;</th>        
+                        <th id="t4" 
+                            >&nbsp;<tal:creator i18n:translate="listingheader_creator"
+                            >Creator</tal:creator>&nbsp;</th>
+                        <th id="t5" 
+                            >&nbsp;<tal:created i18n:translate="listingheader_created"
+                            >Created</tal:created>&nbsp;</th>
+                        <th id="t6" 
+                            >&nbsp;<tal:modified i18n:translate="listingheader_modified"
+                            >Modified</tal:modified>&nbsp;</th>
+                        <th id="t7" 
+                            >&nbsp;<tal:path i18n:translate="listingheader_path"
+                            >Path</tal:path>&nbsp;</th>
+                    </tr>
+                    
+                </thead>
+                <tbody id="target-object-list">
+                
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+-->
+    <script language="JavaScript">initQCSelect();</script>
+  </div>
+
+</body>
+</html>

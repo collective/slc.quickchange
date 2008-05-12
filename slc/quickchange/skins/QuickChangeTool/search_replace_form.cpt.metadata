@@ -1,0 +1,15 @@
+[default]
+title=Search Replace Form
+
+[security]
+View=0:Authenticated
+
+[validators]
+validators..Add=
+validators..Save=
+validators..Delete=
+
+[actions]
+action.success..Search=traverse_to:string:search_replace
+action.success..Replace=traverse_to:string:search_replace
+action.failure=traverse_to:string:search_replace_form

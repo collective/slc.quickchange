@@ -1,0 +1,184 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US"
+      lang="en-US"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+
+  <metal:js fill-slot="javascript_head_slot">
+<script type="text/javascript">
+<!--
+
+isSelected = false;
+
+function SRtoggleSelect() {
+  if (isSelected == false) {
+    for (i = 0; i < document.edit_form.elements.length; i++){
+      if (document.edit_form.elements[i].name=='targets:list')
+          document.edit_form.elements[i].checked = true ;
+    }
+    isSelected = true;
+    document.edit_form.SRselectButton.value = "Deselect All";
+    return isSelected;
+  }
+  else {
+    for (i = 0; i < document.edit_form.elements.length; i++) {
+      if (document.edit_form.elements[i].name=='targets:list')
+          document.edit_form.elements[i].checked = false ;
+    }
+    isSelected = false;
+    document.edit_form.SRselectButton.value = "Select All";
+    return isSelected;
+  }
+}
+
+//-->
+</script>
+  </metal:js>
+ <body>
+
+   <div metal:fill-slot="main" i18n:domain="slc.quickchange">
+<style>
+#object-description{
+    border: 1px dashed black;
+    background-color: #eeeeee;
+    padding: 10px;
+    margin-left:0px;
+    }
+#report-table {
+    border-collapse: collapse;
+}
+#report-table caption {
+    magrin-bottom: 0.6em;
+    font-weight: bold;
+}
+#report-table td,th {
+    padding: 0.3em 1em;
+    background: #eee;
+}
+#report-table th {
+    background: #777;
+    color: #fff;
+    }
+#report-table td {
+    border-bottom: 1px dashed #555;
+}
+</style>
+
+    <h1 i18n:translate="heading_search_replace">
+        Search & Replace
+    </h1>
+
+    <p i18n:translate="description_search_replace">
+        Do a Search & Replace on this object or subtree:
+    </p>
+
+    <div id="object-description">
+    <b><span tal:replace="python:'/'+here.absolute_url(1)"/></b> - <span tal:replace="here/Title"/>
+    </div>
+
+    <form name="edit_form"
+         action="@@search_replace"
+         method="post"
+         enctype="multipart/form-data"
+         xtal:attributes="action string:${here/absolute_url}/${template/getId}" >
+
+    <fieldset>
+
+     <legend i18n:translate="legend_details">Search & Replace</legend>
+
+
+
+
+    <label>Search for ..</label>
+    <div class="field" tal:define="field_id string:search_text">
+        <input type="text" size="80"
+               tal:attributes="name field_id;
+                               id field_id;
+                               value python:request.get(field_id, '');">
+    </div>
+
+    <label>Replace with ..</label>
+    <div class="field" tal:define="field_id string:replace_text">
+        <input type="text" size="80"
+               tal:attributes="name field_id;
+                               id field_id;
+                               value python:request.get(field_id, '');
+               ">
+    </div>
+    <div class="field" tal:define="field_id string:regexp">
+        <input type="checkbox"
+               tal:attributes="name field_id;
+                               id field_id;
+                               checked python:request.get(field_id, '');
+               ">
+               <label>Use Regular Expression Syntax?</label>
+    </div>
+    <div class="field" tal:define="field_id string:recursive">
+        <input type="checkbox"
+               tal:attributes="name field_id;
+                               id field_id;
+                               checked python:request.get(field_id, '');
+               ">
+               <label>Recursive?</label>
+    </div>
+
+
+    <!--div class="formControls">
+        <input class="context"
+               tabindex=""
+               type="submit"
+               name="form.button.Search"
+               value="Search"
+               tal:attributes="tabindex tabindex/next;"
+               i18n:attributes="value" />
+    </div-->
+
+
+
+
+
+    <div tal:condition="view/changed">
+
+        <!--h3>Results</h3-->
+        <table id="report-table" tal:define="pl view/changed" summary="Search & Replace results report">
+            <caption>
+                <span tal:condition="view/recursive | nothing">recursive</span> search for: <span tal:replace="view/search_text | nothing"/><br>
+            <span tal:condition="python:request.get('form.button.Replace','')=='replace'">Replace with: <span tal:replace="view/replace_text | nothing"/></span>
+                <!--span tal:condition="not: request/regexp | nothing">do not</span> use Regular expressions-->
+            </caption>
+
+
+            <tr>
+                <th>&nbsp;</th>
+                <th>ID</th>
+            </tr>
+            <tal:block repeat="line pl">
+            <tr>
+                <td>
+                    <input type="checkbox" name="targets:list" tal:attributes="value string:${line}" />
+                </td>
+                <td>
+                    <a href="" tal:attributes="href line" tal:content="line"></a>
+                </td>
+            </tr>
+            </tal:block>
+        </table>
+    </div>
+
+
+    <div class="formControls">
+        <input class="context"
+               tabindex=""
+               type="submit"
+               name="form.button.Replace"
+               value="Replace"
+               tal:attributes="tabindex tabindex/next;"
+               i18n:attributes="value" />
+    </div>
+
+
+</form>
+
+  </div>
+
+ </body>
+</html>

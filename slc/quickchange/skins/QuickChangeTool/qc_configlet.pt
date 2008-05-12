@@ -1,0 +1,100 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+    <h1>QuickChangeTool Overview</h1>
+
+    <p>Use Quickchange to select objects from your site and apply transformations to them.</p>
+    
+    
+    <h1>Current Job Profiles</h1>
+
+        <div class="documentDescription" tal:content="structure here/Description">
+            description
+        </div>
+
+        <tal:foldercontents define="folderContents python:here.getFolderListingFolderContents(contentFilter={'portal_type':'QCJob'}, suppressHiddenFiles=1)">
+        <tal:listing condition="folderContents"
+                     define="global getObjSize nocall:here/getObjSize;
+                             global toPortalTime nocall:here/toPortalTime;">
+
+            <dl>
+            <tal:entry tal:repeat="obj folderContents">
+
+                <dt tal:define="url python: obj.absolute_url()+test(obj.isPrincipiaFolderish,'/','');
+                                icon python: obj.getIcon(1)">
+                <a href="#" tal:attributes="href url">
+                        <img src="" alt="" tal:attributes="src string:${utool}/${icon};alt here/title_or_id" />
+                </a>
+
+                <a href="#" tal:attributes="href url" tal:content="obj/title_or_id" /> [<i tal:content="obj/getStatus"/>]
+                </dt>
+
+                <dd>
+
+                    <span tal:content="structure python:test(obj.Description(), obj.Description(), '&nbsp;')"> description </span>
+                    <div class="discreet">
+                        <b>Status: <span tal:replace="obj/getStatus">state</span></b> -
+                        Affected Objects: <span tal:replace="python: len(obj.getTargets())">57</span> -
+                        Created: <span tal:replace="obj/created">yesterday</span> - 
+                        Modified: <span tal:replace="obj/modified">date</span> 
+                        <br>
+                    </div>
+                </dd>
+            </tal:entry>
+            </dl>
+
+        </tal:listing>
+        
+        <p class="discreet"
+           tal:condition="not: folderContents" i18n:translate="description_no_jobs_in_folder">
+         There are currently no Jobs defined.
+        </p>
+
+        </tal:foldercontents>
+        
+        
+        
+    <h1>Available Transforms</h1>
+
+        <div class="documentDescription" tal:content="structure here/Description">
+            description
+        </div>
+
+        <tal:foldercontents define="folderContents python:here.getFolderListingFolderContents(contentFilter={'portal_type':'QCTransform'}, suppressHiddenFiles=1)">
+        <tal:listing condition="folderContents"
+                     define="global getObjSize nocall:here/getObjSize;
+                             global toPortalTime nocall:here/toPortalTime;">
+
+            <dl>
+            <tal:entry tal:repeat="obj folderContents">
+
+                <dt tal:define="url python: obj.absolute_url()+test(obj.isPrincipiaFolderish,'/','');
+                                icon python: obj.getIcon(1)">
+                        <img src="" alt="" tal:attributes="src string:${utool}/${icon};alt here/title_or_id" />
+                <span tal:content="obj/title_or_id" />
+                </dt>
+
+                <dd>
+
+                    <span tal:content="structure python:test(obj.Description(), obj.Description(), '&nbsp;')"> description </span>
+                </dd>
+            </tal:entry>
+            </dl>
+
+        </tal:listing>
+        
+        <p class="discreet"
+           tal:condition="not: folderContents" i18n:translate="description_no_transforms_in_folder">
+         There are currently no transforms available.
+        </p>
+
+        </tal:foldercontents>
+    
+</div>
+
+</body>
+</html>

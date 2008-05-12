@@ -1,0 +1,172 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+      
+<head>
+  <metal:ajax fill-slot="javascript_head_slot">
+    <script src="/prototype.js" type="text/javascript"></script>
+    <script src="/scriptaculous.js" type="text/javascript"></script>
+    
+    <script type="text/javascript"
+            tal:attributes="src string:$portal_url/qc_javascripts.js"></script>
+  </metal:ajax>  
+  
+  <metal:css fill-slot="css_slot">
+    <style type="text/css" media="all" 
+               tal:content="string:@import url($portal_url/qc_styledefs.css);"></style> 
+  </metal:css>    
+
+</head>
+
+<body>
+
+  <div metal:fill-slot="main">
+
+    <h1>Determine the objects to change</h1>
+    
+      <div style="padding: 5px;" class="formHelp" i18n:domain="plone" >
+        This Wizard helps you to select the objects to be changed by Quickchange. You have selected a method to choose objects. Now you can save this selection to your job.  
+      </div>
+
+    <h2 i18n:translate="legend_qc_searchform">Step 2: Make a Snapshot of the selected objects</h2>
+    
+   <form name="edit_form"
+         action="."
+         method="post"
+         enctype="multipart/form-data"
+         tal:attributes="action string:${here/getId}/${template/getId}" >
+    
+    <fieldset>
+        <legend>
+            <span i18n:translate="legend_qc_targetpool">Step 2: Make a Snapshot</span>
+        </legend>
+ 
+    <div>
+        <div>Current selection parameters: </div>
+        <span tal:define="selecttype here/getSelectType"> 
+            <span tal:replace="selecttype"/> 
+            <span tal:condition="python:selecttype=='script'" tal:content="here/getSelectScript"/> 
+        </span>
+        <div>
+            Current selection results in objects: <span tal:replace="python:len(here.generateObjectSelection())"/>
+            
+        </div>        
+    </div>
+
+               
+    <div id="move-controls">
+        <div class="formHelp" i18n:domain="plone" i18n:translate="help_qc_make_snapshot">
+            Review the results from your criteria above. If you accept this selection, click on "Make a Snapshot" now to persist this set of objects into your job. You can then manually remove some of the elements from your search list.        
+        </div>
+
+     <input type="Button" id="add-results-button" value="Make a Snapshot" onClick="addAllResults()">
+    </div>
+    
+    <p id="indicator" style="display:none; margin-top:0px;">
+      <img alt="Indicator" src="/indicator_web20_working.gif" /> Updating ...
+    </p>
+    
+        <div id="save-target-msg"></div>
+    
+    <div>
+        <div>
+            Current target objects: <div id="current-target-objects" tal:content="python:len(here.getTargets())" ></div>
+        </div>        
+    </div>
+        
+    </fieldset>
+      
+
+        
+     <div class="formControls">
+      <input type="hidden" name="form.submitted" value="1" />
+             
+      <input class="context"
+             tabindex=""
+             type="Submit"
+             name="form.button.Back"
+             value="Back"
+             tal:attributes="tabindex tabindex/next;" 
+             i18n:attributes="value" />
+
+      <input class="context"
+             tabindex=""
+             type="submit"
+             name="form.button.Next"
+             value="Next"
+             tal:attributes="tabindex tabindex/next;" 
+             i18n:attributes="value" />
+     
+     </div>
+</form>   
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<!--           
+    <fieldset>
+        <legend>
+            <a href='javascript:return false;' onClick="PoolSlideDown();return false;"><img id="qc-arrow-down" src="/qc_arrowDown.gif"></a> 
+            <a href='javascript:return false;' onClick="PoolSlideUp(); return false;"><img id="qc-arrow-up" src="/qc_arrowUp.gif"></a> 
+            <span i18n:translate="legend_qc_targetpool">Step 3: Conrol your target object pool</span>
+        </legend>
+        
+-->        
+            <!--input type="Button" id="reset-target-button" onClick="loadPool()" value="Reset Pool">
+            <input type="Button" id="clear-target-button" onClick="clearPool()" value="Clear Pool">
+            <input type="Button" id="save-target-button" onClick="saveTargets()" value="Save Pool"-->
+<!--        
+        <div id="selectedobjectsarea">
+        
+        <div style="padding: 5px;" class="formHelp" i18n:domain="plone" >
+                <span id="num-stored-objects" tal:content="python:len(here.getTargets())"></span> Objects currently stored in this Job. 
+        </div>
+        
+            <div id="target-objects">
+                <table id="sortable2" class="listing" style="font-size: 105%; width: 100%">
+                <thead>
+                    <tr>
+                        <th id="t1" abbr="Type" i18n:attributes="abbr" i18n:domain="elevateIT" class="nosort">&nbsp;</th>
+                        <th id="t2" 
+                            >&nbsp;<tal:title i18n:translate="listingheader_title"
+                            >Title</tal:title>&nbsp;</th>
+                        <th id="t3"  i18n:domain="elevateIT"
+                            >&nbsp;<tal:type i18n:translate="listingheader_type"
+                            >Type</tal:type>&nbsp;</th>        
+                        <th id="t4" 
+                            >&nbsp;<tal:creator i18n:translate="listingheader_creator"
+                            >Creator</tal:creator>&nbsp;</th>
+                        <th id="t5" 
+                            >&nbsp;<tal:created i18n:translate="listingheader_created"
+                            >Created</tal:created>&nbsp;</th>
+                        <th id="t6" 
+                            >&nbsp;<tal:modified i18n:translate="listingheader_modified"
+                            >Modified</tal:modified>&nbsp;</th>
+                        <th id="t7" 
+                            >&nbsp;<tal:path i18n:translate="listingheader_path"
+                            >Path</tal:path>&nbsp;</th>
+                    </tr>
+                    
+                </thead>
+                <tbody id="target-object-list">
+                
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+-->
+    <script language="JavaScript">initQCSelect();</script>
+  </div>
+
+</body>
+</html>

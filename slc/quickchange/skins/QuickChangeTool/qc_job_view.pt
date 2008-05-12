@@ -1,0 +1,117 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<head>
+  <metal:ajax fill-slot="javascript_head_slot">
+    <script src="/prototype.js" type="text/javascript"></script>
+    <script src="/scriptaculous.js" type="text/javascript"></script>
+    
+    <script type="text/javascript"
+            tal:attributes="src string:$portal_url/qc_javascripts.js"></script>
+            
+  </metal:ajax>  
+  
+  <metal:css fill-slot="css_slot">
+    <style type="text/css" media="all" 
+               tal:content="string:@import url($portal_url/qc_styledefs.css);"></style> 
+  </metal:css>    
+
+</head>
+      
+<body>
+
+<div metal:fill-slot="main">
+    <h1>Job Overview</h1>
+    
+      <h2><span tal:replace="here/Title"/></h2>
+    
+        <p tal:content="here/Description"></p>
+    
+        <fieldset>
+            <legend>Selections</legend>
+            <div>
+                <span tal:replace="python:len(here.getTargets())"/> objects selected for transformation 
+            </div>
+        </fieldset>
+        
+        
+        <fieldset>
+            <legend>Transformations</legend>
+            <div>
+                Selected Transformations: 
+                <ol>
+                    <tal:transforms repeat="ti python:here.objectValues('QCTransformInfo')">
+                      <li tal:define="icon python: ti.getIcon(1); tname ti/getId">
+                        <img src="" alt="" tal:attributes="src string:${utool}/${icon}; alt ti/title_or_id" />
+                        <span tal:replace="tname"/>
+                      </li>
+                    </tal:transforms>
+                </ol>
+            </div>
+        </fieldset>            
+        
+        <fieldset>
+            <legend>Performance Data</legend>
+            
+            <div>
+                Objects processed: <span id="perf-objects-processed" tal:content="here/getPerf_obj_processed"></span> objects
+            </div>
+            <div>
+                Time spent: <span id="perf-time-spent" tal:content="here/getPerf_time_spent"></span> seconds
+            </div>
+            <div>
+                Average time per object: 
+                <span id="perf-objects-per-second" 
+                      tal:condition="here/getPerf_obj_processed" 
+                      tal:content="python:float(here.getPerf_time_spent())/float(here.getPerf_obj_processed())"/> seconds
+            </div>
+            <div tal:on-error="nothing">
+                ETA: 
+                <span id="estimated-time-of-arrival" 
+                      tal:content="python:(float(here.getPerf_time_spent())/float(here.getPerf_obj_processed())*len(here.getTargets()))/60"/> minutes
+            </div>
+            
+        </fieldset>            
+        
+        <fieldset>
+            <legend>Progress Status</legend>
+Note: To run jobs, you need to trigger runRunnableJobs, e.g. by calling it by a cronjob. Add 
+            <pre>1-59 * * * *   wget -q -O /dev/null --http-user=admin --http-passwd=xxxxx http://ony.syslab.sys:5380/portal_quickchangetool/runRunnableJobs 2>&1 /dev/null</pre>
+
+
+            <div class="field">
+                Status: <i id="job-status" tal:content="here/getStatus"></i>
+            </div>
+            <div class="field">
+                Priority: <span tal:replace="here/getPriority | nothing"/>
+            </div>
+            <div class="field" id="status-runnable-block">
+                Is Runnable?: <span id="status-runnable" tal:content="here/getRunnable"/><br/>
+            </div>
+            
+            <input type=button name="schedule_job" id="schedule_job" onClick="scheduleJob()" value="Schedule this Job">
+            <input type=button name="pause_job" id="pause_job" onClick="pauseJob()" value="Pause">
+            <input type=button name="stop_job" id="stop_job" onClick="stopJob()" value="Stop">
+            <input type=button name="reset_job" id="reset_job" onClick="resetJob()" value="Reset">
+
+                
+            <div id="progress" style="display:none;">
+                <div id="progress-display"><div id="progress-bar"></div></div>
+                <div id="progress-descriptor"></div>
+                <div id="object-done-pointer"></div><div id="num-all-objects"><span tal:replace="python:len(here.getTargets())"/></div>
+            </div>
+            <br style="clear: both;" />
+            
+            
+            
+
+
+            
+        </fieldset>            
+        <script language="JavaScript">initQCView();</script>
+
+</div>
+
+</body>
+</html>

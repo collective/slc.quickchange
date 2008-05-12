@@ -10,5 +10,8 @@
 <object name="portal_factory" meta_type="Plone Factory Tool">
   <factorytypes>
     <!-- -*- extra stuff goes here -*- -->
+    <type portal_type="QCTransformInfo" />
+    <type portal_type="QCTransform" />
+    <type portal_type="QCJob" />
   </factorytypes>
 </object>

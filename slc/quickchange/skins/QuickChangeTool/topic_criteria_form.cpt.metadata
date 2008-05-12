@@ -1,0 +1,20 @@
+[default]
+title=Edit Topic Criteria
+
+[security]
+View=0:Authenticated
+
+[validators]
+validators..Add=
+validators..Save=
+validators..Delete=
+
+[actions]
+action.success..Add=traverse_to:string:topic_criteria
+action.success..Save=traverse_to:string:topic_criteria
+action.success..Delete=traverse_to:string:topic_criteria
+action.success..Batch=traverse_to:string:topic_criteria
+action.success..Inherit=traverse_to:string:topic_criteria
+action.success..Join=traverse_to:string:topic_criteria
+action.success..CriteriaToUse=traverse_to:string:topic_criteria
+action.failure=traverse_to:string:topic_criteria_form

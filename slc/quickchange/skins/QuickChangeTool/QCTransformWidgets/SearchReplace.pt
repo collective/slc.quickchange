@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+<metal:SearchReplace_macro metal:define-macro="widget">
+
+
+    <label>Search for</label>
+    <div tal:define="field_id string:SearchReplace_search">
+        <input type="text" 
+               tal:attributes="name field_id; 
+                               id field_id;
+                               value python:here.getValueById(field_id);
+                               onChange string:saveConfigletEntry('${field_id}');"
+               >
+               <span tal:replace="here/absolute_url"/>
+    </div>
+    
+    <label>Replace with</label> 
+    <div tal:define="field_id string:SearchReplace_replace">
+        <input type="text" 
+               tal:attributes="name field_id; 
+                               id field_id;
+                               value python:here.getValueById(field_id);
+                               onChange string:saveConfigletEntry('${field_id}');"
+               >
+    </div>
+    <label>Use Regular Expression Syntax?</label> 
+    <div tal:define="field_id string:SearchReplace_regexp">
+        <input type="checkbox" 
+               tal:attributes="name field_id; 
+                               id field_id;
+                               onChange string:saveConfigletEntry('${field_id}');"
+               >
+    </div>
+</metal:SearchReplace_macro>
+</body>
+</html>

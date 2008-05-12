@@ -1,0 +1,9 @@
+[default]
+title=QuickChange Select Objects Form: Wizard Step 1
+
+[validators]
+
+[actions]
+action.success..Next=traverse_to:string:qc_job_select
+action.success..Cancel=traverse_to:string:qc_job_select_form
+action.failure=traverse_to:string:qc_job_select_form

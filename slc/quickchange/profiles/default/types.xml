@@ -8,4 +8,10 @@
   -->
 <object name="portal_types" meta_type="Plone Types Tool">
   <!-- -*- extra stuff goes here -*- -->
+  <object name="QCTransformInfo"
+    meta_type="Factory-based Type Information with dynamic views" />
+  <object name="QCTransform"
+    meta_type="Factory-based Type Information with dynamic views" />
+  <object name="QCJob"
+    meta_type="Factory-based Type Information with dynamic views" />
 </object>
