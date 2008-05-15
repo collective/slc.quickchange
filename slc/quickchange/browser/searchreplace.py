@@ -7,8 +7,9 @@ from types import UnicodeType, StringType
 from Products.Archetypes.public import RichWidget
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.AdvancedQuery import And, Or, In, Eq
 
-TYPES = ['Document', 'RichDocument', 'News Item', 'Event']
+TYPES = ['Document', 'RichDocument', 'News Item', 'Event', 'Folder']
 SPECIALFISH = ['OSH_Link', 'Provider']
 
 
@@ -36,7 +37,8 @@ class SearchReplaceView(BrowserView):
         self.recursive = self.request.get('recursive','')
         self.regexp = self.request.get('regexp','')
         self.search_only = not self.request.get('form.button.Replace', False)
-
+        self.alllangs = not not self.request.get('alllangs', None)
+        
         self.path = "/".join(self.context.getPhysicalPath())
 
         if not self.search_only:
@@ -48,7 +50,8 @@ class SearchReplaceView(BrowserView):
 
     def do_replace(self):
         """ starting in the root, working through all language paths """
-        if not self.search_text: return
+        if not self.search_text: 
+            return
         context = Acquisition.aq_inner(self.context)
         portal_languages = getToolByName(context, 'portal_languages')
         langs = portal_languages.getSupportedLanguages()
@@ -60,31 +63,29 @@ class SearchReplaceView(BrowserView):
 
         SR = SearchReplace()
 
-        #oshold  = dict(search=OLDOSH, replace=OLDOSHREP, regexp=0)
-        #oldeu  = dict(search=OLDEU, replace=OLDEUREP, regexp=0)
-        #oldag  = dict(search=OLDAG, replace=OLDAGREP, regexp=0)
-        #oshparms = dict(search=OSHPrefix, replace=OSHREP, regexp=1)
-
-#        for lang in langs:
-#            base = getattr(portal, lang, None)
-#            if base is None:
-#                continue
-#            params = dict(search=PAT%lang, replace=REP%lang, regexp=1)
-#
-#            path = '%s/%s' % (portal_path, lang)
-#            results = portal_catalog(path=path, portal_type=TYPES)
-#            for result in results:
-#                ob = result.getObject()
-#                STATE = False
-#
-#                S = SR.apply(ob, oshold)
-#                STATE = STATE or S
-#
-#                if STATE:
-#                    print "Object %s has been fixed" % result.getURL()
+        query = Or()
+        queries = []
+        if self.alllangs:
+            # locate the language component in the path, if we have one. 
+            # If there is one, it is exactly below the portal path
+            pathelems = self.path.split("/")
+            langidx = len(portal.getPhysicalPath())
+            if len(pathelems)>= langidx and len(pathelems[langidx]) == 2 and pathelems[langidx] in langs:
+                # we have a language branch
+                relpathelems = pathelems[langidx+1:]
+                langpaths = []
+                for lang in langs:
+                    langpath = "%s/%s/%s" %(portal_path, lang, "/".join(relpathelems))
+                    langpaths.append(langpath)
+                query = In('path', langpaths) 
+            else:
+                # no language branch, use the current path
+                query = Eq('path', self.path)
+        else:
+            query = Eq('path', self.path)
 
         if self.recursive:
-            results = portal_catalog(Languge='all', path=self.path) # TODO, make language tree support
+            results = portal_catalog.evalAdvancedQuery(query)
         else:
             results = [context]
 
@@ -227,6 +228,24 @@ class SearchReplace:
                 if S:
                     field.set(object, ntext)
                 
+            title = object.Title()
+            ntitle, S  = METHOD(title)
+            STATE = STATE or S
+            if S:
+                object.setTitle(ntitle)
+                
+            description = object.Description()            
+            ndescription, S = METHOD(description)
+            STATE = STATE or S
+            if S:
+                object.setDescription(ndescription)
+
+            return STATE
+
+        if PTYPE in ['Folder', 'Large Plone Folder']:
+            STATE = False
+            ntitle = ndescription = ''
+
             title = object.Title()
             ntitle, S  = METHOD(title)
             STATE = STATE or S

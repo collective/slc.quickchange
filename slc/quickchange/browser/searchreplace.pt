@@ -121,6 +121,15 @@ function SRtoggleSelect() {
                <label>Recursive?</label>
     </div>
 
+    <div class="field" tal:define="field_id string:alllangs">
+        <input type="checkbox"
+               tal:attributes="name field_id;
+                               id field_id;
+                               checked python:request.get(field_id, '');
+               ">
+               <label>For all Languages?</label>
+    </div>
+
 
     <!--div class="formControls">
         <input class="context"
