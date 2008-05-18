@@ -216,7 +216,7 @@ class SearchReplace:
 
         print "S&R portal_type:", PTYPE
         
-        if PTYPE in ['Document', 'RichDocument', 'News Item', 'Event']:
+        if PTYPE in ['Document', 'RichDocument', 'News Item', 'Event', 'Topic']:
             ntext = ntitle = ndescription = ''
             fields = _getRichTextFields(object)
             STATE = False
