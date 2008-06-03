@@ -83,7 +83,7 @@ class SearchReplaceView(BrowserView):
                 query = Eq('path', self.path)
         else:
             query = Eq('path', self.path)
-
+        print str(query)
         if self.recursive:
             results = portal_catalog.evalAdvancedQuery(query)
         else:
@@ -94,7 +94,11 @@ class SearchReplaceView(BrowserView):
 
         for result in results:
             if hasattr(Acquisition.aq_base(result), 'getObject'):
-                ob = result.getObject()
+                try:
+                    ob = result.getObject()
+                except AttributeError, ae:
+                    print "Error retrieving Object for %s" % result.getPath()
+                    continue
             else:
                 ob = result
                 
@@ -214,7 +218,7 @@ class SearchReplace:
         if regexp:
             METHOD = sr_regexp
 
-        print "S&R portal_type:", PTYPE
+        #print "S&R portal_type:", PTYPE
         
         if PTYPE in ['Document', 'RichDocument', 'News Item', 'Event', 'Topic']:
             ntext = ntitle = ndescription = ''
