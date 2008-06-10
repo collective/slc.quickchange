@@ -104,14 +104,6 @@ function SRtoggleSelect() {
                                value python:request.get(field_id, '');
                ">
     </div>
-    <div class="field" tal:define="field_id string:regexp">
-        <input type="checkbox"
-               tal:attributes="name field_id;
-                               id field_id;
-                               checked python:request.get(field_id, '');
-               ">
-               <label>Use Regular Expression Syntax?</label>
-    </div>
     <div class="field" tal:define="field_id string:recursive">
         <input type="checkbox"
                tal:attributes="name field_id;
@@ -129,7 +121,30 @@ function SRtoggleSelect() {
                ">
                <label>For all Languages?</label>
     </div>
-
+    <div class="field" tal:define="field_id string:regexp">
+        <input type="checkbox"
+               tal:attributes="name field_id;
+                               id field_id;
+                               checked python:request.get(field_id, '');
+               ">
+               <label>Use Regular Expression Syntax?</label>
+    </div>
+    <div class="field" tal:define="field_id string:re_I">
+        <input type="checkbox"
+               tal:attributes="name field_id;
+                               id field_id;
+                               checked python:request.get(field_id, '');
+               ">
+               <label>Ignore case? (only for Regular Expression)</label>
+    </div>
+    <div class="field" tal:define="field_id string:re_S">
+        <input type="checkbox"
+               tal:attributes="name field_id;
+                               id field_id;
+                               checked python:request.get(field_id, '');
+               ">
+               <label>Dotall? (only for Regular Expression - a dot will also match newline)</label>
+    </div>
 
     <!--div class="formControls">
         <input class="context"

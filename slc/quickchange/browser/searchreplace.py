@@ -36,6 +36,8 @@ class SearchReplaceView(BrowserView):
         self.replace_text = self.request.get('replace_text','')
         self.recursive = self.request.get('recursive','')
         self.regexp = self.request.get('regexp','')
+        self.re_I = self.request.get('re_I', '')
+        self.re_S = self.request.get('re_S', '')
         self.search_only = not self.request.get('form.button.Replace', False)
         self.alllangs = not not self.request.get('alllangs', None)
         
@@ -89,7 +91,11 @@ class SearchReplaceView(BrowserView):
         else:
             results = [context]
 
-        params = dict(search=self.search_text, replace=self.replace_text, regexp=self.regexp)
+        params = dict(search=self.search_text, 
+            replace=self.replace_text, 
+            regexp=self.regexp,
+            re_I=self.re_I,
+            re_S=self.re_S)
         self.changed = []
 
         for result in results:
@@ -204,14 +210,22 @@ class SearchReplace:
                         import pdb, sys
                         e, m, tb = sys.exc_info()
                         pdb.post_mortem(tb)
-
-            if re.findall(srch, text):
+            flags = None
+            if params.get('re_I', ''):
+                flags = re.I
+            if params.get('re_S', ''):
+                if flags:
+                    flags = flags | re.S
+                else:
+                    flags = re.S
+            patt = re.compile(srch, flags)
+            if re.findall(patt, text):
                 found = 1
 
             if search_only:
                 ntext = text
             else:
-                ntext = re.sub(srch, rep, text)
+                ntext = re.sub(patt, rep, text)
             return ntext.encode('utf-8'), found
 
         METHOD = sr_std
