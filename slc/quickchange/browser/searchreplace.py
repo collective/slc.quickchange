@@ -60,6 +60,8 @@ class SearchReplaceView(BrowserView):
         portal_url = getToolByName(context, 'portal_url')
         portal = portal_url.getPortalObject()
         portal_catalog = getToolByName(context, 'portal_catalog')
+        if hasattr(portal_catalog, 'getZCatalog'):
+            portal_catalog = portal_catalog.getZCatalog()        
         portal_path = "/".join(portal.getPhysicalPath())
         out = StringIO.StringIO()
 
