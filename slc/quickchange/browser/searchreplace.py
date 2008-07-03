@@ -9,9 +9,6 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.AdvancedQuery import And, Or, In, Eq
 
-TYPES = ['Document', 'RichDocument', 'News Item', 'Event', 'Folder']
-SPECIALFISH = ['OSH_Link', 'Provider']
-
 
 class SearchReplaceView(BrowserView):
     """ Doing Search and Replace on the current context """
