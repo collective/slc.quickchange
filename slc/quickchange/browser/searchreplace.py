@@ -40,9 +40,16 @@ class SearchReplaceView(BrowserView):
         
         self.path = "/".join(self.context.getPhysicalPath())
 
-        if not self.search_only:
-            self.do_replace()
-            
+#        if not self.search_only:
+        # always call do_replace, because the search_only parameter is now considered there
+        self.do_replace()
+        
+        if len(self.changed):
+            if self.search_only:
+                message = u"The following objects would be found by your query (see below)"
+            else:
+                message = u"The following objects were fixed according to your query (see below)"
+            getToolByName(self.context, 'plone_utils').addPortalMessage(message)
         return self.template()
 
 
@@ -66,35 +73,48 @@ class SearchReplaceView(BrowserView):
 
         query = Or()
         queries = []
-        if self.alllangs:
-            # locate the language component in the path, if we have one. 
-            # If there is one, it is exactly below the portal path
-            pathelems = self.path.split("/")
-            langidx = len(portal.getPhysicalPath())
-            if len(pathelems)>= langidx and len(pathelems[langidx]) == 2 and pathelems[langidx] in langs:
-                # we have a language branch
-                relpathelems = pathelems[langidx+1:]
-                langpaths = []
-                for lang in langs:
-                    langpath = "%s/%s/%s" %(portal_path, lang, "/".join(relpathelems))
-                    langpaths.append(langpath)
-                query = In('path', langpaths) 
-            else:
-                # no language branch, use the current path
-                query = Eq('path', self.path)
-        else:
-            query = Eq('path', self.path)
-        print str(query)
+        # Recursive means: do a catalog query, based on paths
+        # If translations have different ids, they won't be found this way.
         if self.recursive:
+            if self.alllangs:
+                # locate the language component in the path, if we have one. 
+                # If there is one, it is exactly below the portal path
+                pathelems = self.path.split("/")
+                langidx = len(portal.getPhysicalPath())
+                if len(pathelems)>= langidx and len(pathelems[langidx]) == 2 and pathelems[langidx] in langs:
+                    # we have a language branch
+                    relpathelems = pathelems[langidx+1:]
+                    langpaths = []
+                    for lang in langs:
+                        langpath = "%s/%s/%s" %(portal_path, lang, "/".join(relpathelems))
+                        langpaths.append(langpath)
+                    query = In('path', langpaths) 
+                else:
+                    # no language branch, use the current path
+                    query = Eq('path', self.path)
+            else:
+                query = Eq('path', self.path)
+#            print str(query)
             results = portal_catalog.evalAdvancedQuery(query)
         else:
-            results = [context]
+            # A non-recursive search for all language version uses LinguaPlone's getTranslation.
+            # Here we are independent of paths / ids.
+            # Of course this will fail if a translation reference is missing.
+            if self.alllangs:
+                results = list()
+                for lang in langs:
+                    trans = context.getTranslation(lang)
+                    if trans:
+                        results.append(trans)
+            else:
+                results = [context]
 
         params = dict(search=self.search_text, 
             replace=self.replace_text, 
             regexp=self.regexp,
             re_I=self.re_I,
-            re_S=self.re_S)
+            re_S=self.re_S,
+            search_only=self.search_only)
         self.changed = []
 
         for result in results:
@@ -116,7 +136,7 @@ class SearchReplaceView(BrowserView):
                 obpath = "/".join(ob.getPhysicalPath())
                 oburl = ob.absolute_url()
                 self.changed.append(oburl)
-                print "Object %s has been fixed" % obpath
+#                print "Object %s has been fixed" % obpath
 
 
 
@@ -259,7 +279,7 @@ class SearchReplace:
 
             return STATE
 
-        if PTYPE in ['Folder', 'Large Plone Folder']:
+        if PTYPE in ['Folder', 'Large Plone Folder', 'File']:
             STATE = False
             ntitle = ndescription = ''
 

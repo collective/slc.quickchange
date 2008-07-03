@@ -119,7 +119,7 @@ function SRtoggleSelect() {
                                id field_id;
                                checked python:request.get(field_id, '');
                ">
-               <label>For all Languages?</label>
+               <label>For all Languages? </label>(If used with recursive option, path matching will be used, else LinguaPlone's getTranslation)
     </div>
     <div class="field" tal:define="field_id string:regexp">
         <input type="checkbox"
@@ -135,7 +135,7 @@ function SRtoggleSelect() {
                                id field_id;
                                checked python:request.get(field_id, '');
                ">
-               <label>Ignore case? (only for Regular Expression)</label>
+               <label>Ignore case? </label>(only for Regular Expression)
     </div>
     <div class="field" tal:define="field_id string:re_S">
         <input type="checkbox"
@@ -143,7 +143,7 @@ function SRtoggleSelect() {
                                id field_id;
                                checked python:request.get(field_id, '');
                ">
-               <label>Dotall? (only for Regular Expression - a dot will also match newline)</label>
+               <label>Dotall? </label>(only for Regular Expression - a dot will also match newline)
     </div>
 
     <!--div class="formControls">
@@ -190,6 +190,14 @@ function SRtoggleSelect() {
 
 
     <div class="formControls">
+        <input class="context"
+               tabindex=""
+               type="submit"
+               name="form.button.Search"
+               value="Search only"
+               tal:attributes="tabindex tabindex/next;"
+               i18n:attributes="value" />
+               
         <input class="context"
                tabindex=""
                type="submit"
