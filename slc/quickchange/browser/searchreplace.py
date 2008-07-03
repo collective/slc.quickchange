@@ -237,7 +237,10 @@ class SearchReplace:
                     flags = flags | re.S
                 else:
                     flags = re.S
-            patt = re.compile(srch, flags)
+            if flags:
+                patt = re.compile(srch, flags)
+            else:
+                patt = re.compile(srch)
             if re.findall(patt, text):
                 found = 1
 
