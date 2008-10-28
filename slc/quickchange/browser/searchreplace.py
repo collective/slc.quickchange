@@ -282,7 +282,7 @@ class SearchReplace:
 
             return STATE
 
-        if PTYPE in ['Folder', 'Large Plone Folder', 'File']:
+        if PTYPE in ['Folder', 'Large Plone Folder']:
             STATE = False
             ntitle = ndescription = ''
 
@@ -299,7 +299,33 @@ class SearchReplace:
                 object.setDescription(ndescription)
 
             return STATE
-        
+
+        elif PTYPE in ['File']:
+            STATE = False
+            ntitle = ndescription = ''
+            ndata = ''
+            
+            title = object.Title()
+            ntitle, S  = METHOD(title)
+            STATE = STATE or S
+            if S:
+                object.setTitle(ntitle)
+                
+            description = object.Description()            
+            ndescription, S = METHOD(description)
+            STATE = STATE or S
+            if S:
+                object.setDescription(ndescription)
+    
+            if object.getContentType().startswith('text/'):
+                data = str(object.getFile().data)
+                ndata, S = METHOD(data)
+                STATE = STATE or S
+                if S:
+                    object.setFile(ndata)
+
+            return STATE
+                                
         elif PTYPE in ['OSH_Link', 'Provider']:
             ntext = ntitle  = ''
             fields = _getRichTextFields(object)
