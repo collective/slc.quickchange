@@ -1,6 +1,11 @@
 slc.quickchange Changelog
 =========================
 
+slc.quickchange 1.2 (2009-06-17)
+--------------------------------
+
+- First changes to get tests working (gerken)
+
 slc.quickchange 1.1 (2009-05-12)
 --------------------------------
 
