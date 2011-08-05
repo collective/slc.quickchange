@@ -18,11 +18,6 @@ long_description = (
     + '\n' +
     read('CHANGES.txt')
     + '\n' +
-    'Detailed Documentation\n'
-    '**********************\n'
-    + '\n' +
-    read('slc', 'quickchange', 'README.txt')
-    + '\n' +
     'Contributors\n'
     '************\n'
     + '\n' +
