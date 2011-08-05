@@ -60,6 +60,5 @@ setup(name='slc.quickchange',
       entry_points="""
       # -*- entry_points -*- 
       """,
-      paster_plugins = ["ZopeSkel"],
       )      
       
