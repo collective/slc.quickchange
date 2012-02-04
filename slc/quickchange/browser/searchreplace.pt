@@ -191,19 +191,15 @@ function SRtoggleSelect() {
 
     <div class="formControls">
         <input class="context"
-               tabindex=""
                type="submit"
                name="form.button.Search"
                value="Search only"
-               tal:attributes="tabindex tabindex/next;"
                i18n:attributes="value" />
                
         <input class="context"
-               tabindex=""
                type="submit"
                name="form.button.Replace"
                value="Replace"
-               tal:attributes="tabindex tabindex/next;"
                i18n:attributes="value" />
     </div>
 
