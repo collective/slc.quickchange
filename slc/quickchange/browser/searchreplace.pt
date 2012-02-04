@@ -3,36 +3,6 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
 
-  <metal:js fill-slot="javascript_head_slot">
-<script type="text/javascript">
-<!--
-
-isSelected = false;
-
-function SRtoggleSelect() {
-  if (isSelected == false) {
-    for (i = 0; i < document.edit_form.elements.length; i++){
-      if (document.edit_form.elements[i].name=='targets:list')
-          document.edit_form.elements[i].checked = true ;
-    }
-    isSelected = true;
-    document.edit_form.SRselectButton.value = "Deselect All";
-    return isSelected;
-  }
-  else {
-    for (i = 0; i < document.edit_form.elements.length; i++) {
-      if (document.edit_form.elements[i].name=='targets:list')
-          document.edit_form.elements[i].checked = false ;
-    }
-    isSelected = false;
-    document.edit_form.SRselectButton.value = "Select All";
-    return isSelected;
-  }
-}
-
-//-->
-</script>
-  </metal:js>
  <body>
 
    <div metal:fill-slot="main" i18n:domain="slc.quickchange">
@@ -64,11 +34,11 @@ function SRtoggleSelect() {
 </style>
 
     <h1 i18n:translate="heading_search_replace">
-        Search & Replace
+        Search &amp; Replace
     </h1>
 
     <p i18n:translate="description_search_replace">
-        Do a Search & Replace on this object or subtree:
+        Do a Search &amp; Replace on this object or subtree:
     </p>
 
     <div id="object-description">
@@ -79,7 +49,7 @@ function SRtoggleSelect() {
          action="@@search_replace"
          method="post"
          enctype="multipart/form-data"
-         tal:attributes="action string:${here/absolute_url}/@@search-replace" >
+         tal:attributes="action string:${here/absolute_url}/${view/getName}" >
 
     <fieldset>
 

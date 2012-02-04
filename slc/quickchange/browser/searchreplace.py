@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re, Acquisition
 import StringIO
 from Products.CMFCore.utils import getToolByName
@@ -14,6 +15,10 @@ class SearchReplaceView(BrowserView):
     
     template = ViewPageTemplateFile('searchreplace.pt')
     
+
+    def getName(self):
+        return self.__name__
+
     def __init__(self, context, request):
         super(SearchReplaceView, self).__init__(context, request)
         self.request = request
@@ -39,8 +44,6 @@ class SearchReplaceView(BrowserView):
         
         self.path = "/".join(self.context.getPhysicalPath())
 
-#        if not self.search_only:
-        # always call do_replace, because the search_only parameter is now considered there
         self.do_replace()
         
         if len(self.changed):
@@ -50,7 +53,6 @@ class SearchReplaceView(BrowserView):
                 message = u"The following objects were fixed according to your query (see below)"
             getToolByName(self.context, 'plone_utils').addPortalMessage(message)
         return self.template()
-
 
 
     def do_replace(self):
@@ -88,12 +90,12 @@ class SearchReplaceView(BrowserView):
                         langpath = "%s/%s/%s" %(portal_path, lang, "/".join(relpathelems))
                         langpaths.append(langpath)
                     query['path'] = langpaths
+                    query['Language'] = 'all'
                 else:
                     # no language branch, use the current path
                     query['path'] = self.path
             else:
                 query['path'] = self.path
-#            print str(query)
             results = portal_catalog(query)
         else:
             # A non-recursive search for all language version uses LinguaPlone's getTranslation.
@@ -135,8 +137,6 @@ class SearchReplaceView(BrowserView):
                 obpath = "/".join(ob.getPhysicalPath())
                 oburl = ob.absolute_url()
                 self.changed.append(oburl)
-#                print "Object %s has been fixed" % obpath
-
 
 
 def _getRichTextFields(object):
@@ -144,29 +144,6 @@ def _getRichTextFields(object):
               if isinstance(f.widget, RichWidget)]
 
 
-
-OLDOSH = 'osha.eu.int'
-OLDOSHREP = 'osha.europa.eu'
-
-OSHPrefix = 'href="http://osha.europa.eu/(.*?)"'
-OSHREP = 'href="/\\1"'
-
-OLDOSH = 'osha.eu.int'
-OLDOSHREP = 'osha.europa.eu'
-
-OLDEU = 'europe.osha.europa.eu'
-OLDEUREP = 'osha.europa.eu'
-
-OLDAG = 'agency.osha.europa.eu'
-OLDAGREP = 'osha.europa.eu'
-
-
-PAT = 'href="/(?!%s)(.*)"'
-REP = 'href="/%s/\\1"'
-
-
-
-    
 class SearchReplace:
     """ The Search & Replace Transforms can search for a given string and replace it by another string. 
     The Matching is literal and does not use regular expressions
@@ -324,35 +301,3 @@ class SearchReplace:
                     object.setFile(ndata)
 
             return STATE
-                                
-        elif PTYPE in ['OSH_Link', 'Provider']:
-            ntext = ntitle  = ''
-            fields = _getRichTextFields(object)
-            STATE = False
-            
-            for field in fields:
-                text = field.getRaw(object)
-                ntext, S = METHOD(text)
-                STATE = STATE or S
-                if S:
-                    field.set(object, ntext)
-                
-            title = object.Title()
-            ntitle, S  = METHOD(title)
-            STATE = STATE or S
-            if S:
-                object.setTitle(ntitle)
-                
-            url = object.getRemoteUrl()
-            # fix to make the other re match
-            url = 'href="%s"' % url
-            nurl, S  = METHOD(url)
-            STATE = STATE or S
-            if S:
-                nurl = nurl.replace('href="', '')
-                if nurl[-1]=='"': nurl = nurl[:-1]
-                object.setRemoteUrl(nurl)
-
-            return STATE            
-
-        
