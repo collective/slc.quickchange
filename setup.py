@@ -5,10 +5,11 @@ This module contains the slc.quickchange package
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version = '1.4dev'
+version = '2.0dev'
 
 long_description = (
     read('README.txt')
@@ -22,16 +23,15 @@ long_description = (
     '************\n'
     + '\n' +
     read('CONTRIBUTORS.txt')
-    + '\n' 
-    )
-    
-tests_require=['zope.testing']
+    + '\n')
+
+tests_require = ['zope.testing']
 
 setup(name='slc.quickchange',
       version=version,
-      description="Tool to change the content of your objects",
+      description="A tool that adds Search and Replace functionality for "
+      "the content of your objects",
       long_description=long_description,
-      # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Plone",
         "Framework :: Zope2",
@@ -39,9 +39,10 @@ setup(name='slc.quickchange',
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "License :: OSI Approved :: GNU General Public License (GPL)",
-        "License :: OSI Approved :: European Union Public Licence 1.1 (EUPL 1.1)",
+        "License :: OSI Approved :: European Union Public Licence 1.1 "
+        "(EUPL 1.1)",
         ],
-      keywords='change batch quickchange search replace',
+      keywords='change batch quickchange search replace regex linguaplone',
       author='Syslab.com GmbH',
       author_email='info@syslab.com',
       url='https://svn.syslab.com/svn/syslabcom/slc.quickchange/',
@@ -51,15 +52,14 @@ setup(name='slc.quickchange',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'setuptools',    
-          # -*- Extra requirements: -*-
+          'setuptools',
+          'Products.LinguaPlone',
       ],
       tests_require=tests_require,
       extras_require=dict(tests=tests_require),
-      test_suite = 'slc.quickchange.tests.test_docs.test_suite',
+      test_suite='slc.quickchange.tests.test_docs.test_suite',
       entry_points="""
         [z3c.autoinclude.plugin]
         target = plone
       """,
-      )      
-      
+      )
