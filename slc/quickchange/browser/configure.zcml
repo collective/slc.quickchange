@@ -7,7 +7,7 @@
 
     <browser:page
         for="*"
-        name="search_replace"
+        name="search-replace"
         class=".searchreplace.SearchReplaceView"
         permission="cmf.ModifyPortalContent"
     />
