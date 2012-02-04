@@ -79,7 +79,7 @@ function SRtoggleSelect() {
          action="@@search_replace"
          method="post"
          enctype="multipart/form-data"
-         tal:attributes="action string:${here/absolute_url}/@@search_replace" >
+         tal:attributes="action string:${here/absolute_url}/@@search-replace" >
 
     <fieldset>
 
