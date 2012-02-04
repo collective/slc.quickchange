@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import re, Acquisition
+import re
+import Acquisition
 import StringIO
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_base, aq_parent, aq_inner
-import os, re
+import os
 from types import UnicodeType, StringType
 from Products.Archetypes.public import RichWidget
 from Products.Five.browser import BrowserView
@@ -14,7 +15,6 @@ class SearchReplaceView(BrowserView):
     """ Doing Search and Replace on the current context """
 
     template = ViewPageTemplateFile('searchreplace.pt')
-
 
     def getName(self):
         return self.__name__
@@ -33,10 +33,10 @@ class SearchReplaceView(BrowserView):
 
     def __call__(self):
         self.request.set('disable_border', True)
-        self.search_text = self.request.get('search_text','')
-        self.replace_text = self.request.get('replace_text','')
-        self.recursive = self.request.get('recursive','')
-        self.regexp = self.request.get('regexp','')
+        self.search_text = self.request.get('search_text', '')
+        self.replace_text = self.request.get('replace_text', '')
+        self.recursive = self.request.get('recursive', '')
+        self.regexp = self.request.get('regexp', '')
         self.re_I = self.request.get('re_I', '')
         self.re_S = self.request.get('re_S', '')
         self.search_only = not self.request.get('form.button.Replace', False)
@@ -48,12 +48,14 @@ class SearchReplaceView(BrowserView):
 
         if len(self.changed):
             if self.search_only:
-                message = u"The following objects would be found by your query (see below)"
+                message = u"The following objects would be found by your "
+                "query (see below)"
             else:
-                message = u"The following objects were fixed according to your query (see below)"
-            getToolByName(self.context, 'plone_utils').addPortalMessage(message)
+                message = u"The following objects were fixed according to "
+                "your query (see below)"
+            plone_utils = getToolByName(self.context, 'plone_utils')
+            plone_utils.addPortalMessage(message)
         return self.template()
-
 
     def do_replace(self):
         """ starting in the root, working through all language paths """
@@ -75,19 +77,23 @@ class SearchReplaceView(BrowserView):
         query = dict()
         queries = []
         # Recursive means: do a catalog query, based on paths
-        # If translations have different ids, they won't be found this way.
+        # If translations of the elements up to the current level have
+        # different ids, they won't be found this way.
         if self.recursive:
             if self.alllangs:
                 # locate the language component in the path, if we have one.
                 # If there is one, it is exactly below the portal path
                 pathelems = self.path.split("/")
                 langidx = len(portal.getPhysicalPath())
-                if len(pathelems)>= langidx and len(pathelems[langidx]) == 2 and pathelems[langidx] in langs:
+                if len(pathelems) >= langidx and len(pathelems[langidx]) == 2 \
+                    and pathelems[langidx] in langs:
                     # we have a language branch
-                    relpathelems = pathelems[langidx+1:]
+                    relpathelems = pathelems[langidx + 1:]
                     langpaths = []
                     for lang in langs:
-                        langpath = "%s/%s/%s" %(portal_path, lang, "/".join(relpathelems))
+                        langpath = "%(portal)s/%(lang)s/%(elems)s" % dict(
+                            portal=portal_path, lang=lang,
+                            elems="/".join(relpathelems))
                         langpaths.append(langpath)
                     query['path'] = langpaths
                     query['Language'] = 'all'
@@ -98,9 +104,9 @@ class SearchReplaceView(BrowserView):
                 query['path'] = self.path
             results = portal_catalog(query)
         else:
-            # A non-recursive search for all language version uses LinguaPlone's getTranslation.
+            # A non-recursive search for all language version uses
+            # LinguaPlone's getTranslation.
             # Here we are independent of paths / ids.
-            # Of course this will fail if a translation reference is missing.
             if self.alllangs:
                 results = list()
                 for lang in langs:
@@ -145,14 +151,17 @@ def _getRichTextFields(object):
 
 
 class SearchReplace:
-    """ The Search & Replace Transforms can search for a given string and replace it by another string.
+    """ The Search & Replace Transforms can search for a given string and
+    replace it by another string.
     The matching can bei either literal or use regular expressions.
     """
+
     def apply(self, object, params={}):
         """ apply a Search & Replace on the content of an object """
         state = False
         # Describes if a pattern has been found in this object.
-        # If it has been found it'll also be replaced, so we can use this for both search and replace mode.
+        # If it has been found it'll also be replaced, so we can use this for
+        # both search and replace mode.
         srch = params.get('search')
         rep = params.get('replace')
         search_only = params.get('search_only')
@@ -175,9 +184,8 @@ class SearchReplace:
                     try:
                         text = unicode(text, 'iso8859-15')
                     except:
-                        import pdb, sys
-                        e, m, tb = sys.exc_info()
-                        pdb.post_mortem(tb)
+                        # Log error?
+                        return(text, False)
             if text.find(srch) != -1:
                 found = 1
 
@@ -198,9 +206,8 @@ class SearchReplace:
                     try:
                         text = unicode(text, 'iso8859-15')
                     except:
-                        import pdb, sys
-                        e, m, tb = sys.exc_info()
-                        pdb.post_mortem(tb)
+                        # Log error?
+                        return(text, False)
             flags = None
             if params.get('re_I', ''):
                 flags = re.I
@@ -226,7 +233,9 @@ class SearchReplace:
         if regexp:
             method = sr_regexp
 
-        if ob.portal_type in ['Document', 'RichDocument', 'News Item', 'Event', 'Topic', 'PressRoom', 'PressRelease', 'PressClip', 'PressContact']:
+        if ob.portal_type in ['Document', 'RichDocument', 'News Item',
+            'Event', 'Topic', 'PressRoom', 'PressRelease', 'PressClip',
+            'PressContact']:
             ntext = ntitle = ndescription = ''
             fields = _getRichTextFields(object)
             state = False
@@ -239,7 +248,7 @@ class SearchReplace:
                     field.set(object, ntext)
 
             title = object.Title()
-            ntitle, changed  = method(title)
+            ntitle, changed = method(title)
             state = state or changed
             if changed:
                 object.setTitle(ntitle)
@@ -257,7 +266,7 @@ class SearchReplace:
             ntitle = ndescription = ''
 
             title = object.Title()
-            ntitle, changed  = method(title)
+            ntitle, changed = method(title)
             state = state or changed
             if changed:
                 object.setTitle(ntitle)
@@ -276,7 +285,7 @@ class SearchReplace:
             ndata = ''
 
             title = object.Title()
-            ntitle, changed  = method(title)
+            ntitle, changed = method(title)
             state = state or changed
             if changed:
                 object.setTitle(ntitle)
