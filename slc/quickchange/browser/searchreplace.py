@@ -128,12 +128,12 @@ class SearchReplaceView(BrowserView):
             else:
                 ob = result
                 
-            STATE = False
+            state = False
 
-            S = SR.apply(ob, params)
-            STATE = STATE or S
+            changed = SR.apply(ob, params)
+            state = state or changed
 
-            if STATE:
+            if state:
                 obpath = "/".join(ob.getPhysicalPath())
                 oburl = ob.absolute_url()
                 self.changed.append(oburl)
@@ -146,21 +146,17 @@ def _getRichTextFields(object):
 
 class SearchReplace:
     """ The Search & Replace Transforms can search for a given string and replace it by another string. 
-    The Matching is literal and does not use regular expressions
+    The matching can bei either literal or use regular expressions.
     """
     def apply(self, object, params={}):
         """ apply a Search & Replace on the content of an object """
-        STATE = 0 
+        state = False
         # Describes if a pattern has been found in this object. 
         # If it has been found it'll also be replaced, so we can use this for both search and replace mode.
-        #print "Applying Search and replace on ", object.getId(), "/".join(object.getPhysicalPath())
         srch = params.get('search')
         rep = params.get('replace')
         search_only = params.get('search_only')
-        CHANGED = 0
         ob = aq_base(object)
-        PTYPE = ob.portal_type
-        MTYPE = ob.meta_type
         regexp = params.get('regexp', 0)
 
         if type(srch) != UnicodeType:
@@ -226,78 +222,76 @@ class SearchReplace:
                 ntext = re.sub(patt, rep, text)
             return ntext.encode('utf-8'), found
 
-        METHOD = sr_std
+        method = sr_std
         if regexp:
-            METHOD = sr_regexp
+            method = sr_regexp
 
-        #print "S&R portal_type:", PTYPE
-        
-        if PTYPE in ['Document', 'RichDocument', 'News Item', 'Event', 'Topic', 'PressRoom', 'PressRelease', 'PressClip', 'PressContact']:
+        if ob.portal_type in ['Document', 'RichDocument', 'News Item', 'Event', 'Topic', 'PressRoom', 'PressRelease', 'PressClip', 'PressContact']:
             ntext = ntitle = ndescription = ''
             fields = _getRichTextFields(object)
-            STATE = False
+            state = False
             
             for field in fields:
                 text = field.getRaw(object)
-                ntext, S = METHOD(text)
-                STATE = STATE or S
-                if S:
+                ntext, changed = method(text)
+                state = state or changed
+                if changed:
                     field.set(object, ntext)
                 
             title = object.Title()
-            ntitle, S  = METHOD(title)
-            STATE = STATE or S
-            if S:
+            ntitle, changed  = method(title)
+            state = state or changed
+            if changed:
                 object.setTitle(ntitle)
                 
             description = object.Description()            
-            ndescription, S = METHOD(description)
-            STATE = STATE or S
-            if S:
+            ndescription, changed = method(description)
+            state = state or changed
+            if changed:
                 object.setDescription(ndescription)
 
-            return STATE
+            return state
 
-        if PTYPE in ['Folder', 'Large Plone Folder']:
-            STATE = False
+        if ob.portal_type in ['Folder', 'Large Plone Folder']:
+            state = False
             ntitle = ndescription = ''
 
             title = object.Title()
-            ntitle, S  = METHOD(title)
-            STATE = STATE or S
-            if S:
+            ntitle, changed  = method(title)
+            state = state or changed
+            if changed:
                 object.setTitle(ntitle)
                 
             description = object.Description()            
-            ndescription, S = METHOD(description)
-            STATE = STATE or S
-            if S:
+            ndescription, changed = method(description)
+            state = state or changed
+            if changed:
                 object.setDescription(ndescription)
 
-            return STATE
+            return state
 
-        elif PTYPE in ['File']:
-            STATE = False
+        elif ob.portal_type in ['File']:
+            state = False
             ntitle = ndescription = ''
             ndata = ''
             
             title = object.Title()
-            ntitle, S  = METHOD(title)
-            STATE = STATE or S
-            if S:
+            ntitle, changed  = method(title)
+            state = state or changed
+            if changed:
                 object.setTitle(ntitle)
                 
             description = object.Description()            
-            ndescription, S = METHOD(description)
-            STATE = STATE or S
-            if S:
+            ndescription, changed = method(description)
+            state = state or changed
+            if changed:
                 object.setDescription(ndescription)
     
             if object.getContentType().startswith('text/'):
                 data = str(object.getFile().data)
-                ndata, S = METHOD(data)
-                STATE = STATE or S
-                if S:
+                ndata, changed = method(data)
+                state = state or changed
+                if changed:
                     object.setFile(ndata)
 
-            return STATE
+            return state
