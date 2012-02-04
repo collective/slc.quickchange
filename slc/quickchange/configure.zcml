@@ -4,17 +4,14 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="slc.quickchange">
 
-    <five:registerPackage package="." initialize=".initialize" />
-
     <include package=".browser" />
-
 
     <!-- Register the installation GenericSetup extension profile -->
     <genericsetup:registerProfile
       name="default"
-      title="QuickChange Tool"
+      title="slc.quickchange"
       directory="profiles/default"
-      description="Tool to change the content of your objects"
+      description="Provides Search and Replace functionality on your content"
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
