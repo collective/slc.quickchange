@@ -1,7 +1,7 @@
 slc.quickchange Changelog
 =========================
 
-2.0 (unreleased)
+2.0 (2012-02-04)
 ----------------
 
 - Eliminated old cruft, made it work with Plone 4 [thomasw]
