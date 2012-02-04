@@ -12,9 +12,9 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 class SearchReplaceView(BrowserView):
     """ Doing Search and Replace on the current context """
-    
+
     template = ViewPageTemplateFile('searchreplace.pt')
-    
+
 
     def getName(self):
         return self.__name__
@@ -30,7 +30,7 @@ class SearchReplaceView(BrowserView):
         self.regexp = False
         self.search_only = True
         self.path = None
-        
+
     def __call__(self):
         self.request.set('disable_border', True)
         self.search_text = self.request.get('search_text','')
@@ -41,11 +41,11 @@ class SearchReplaceView(BrowserView):
         self.re_S = self.request.get('re_S', '')
         self.search_only = not self.request.get('form.button.Replace', False)
         self.alllangs = not not self.request.get('alllangs', None)
-        
+
         self.path = "/".join(self.context.getPhysicalPath())
 
         self.do_replace()
-        
+
         if len(self.changed):
             if self.search_only:
                 message = u"The following objects would be found by your query (see below)"
@@ -57,7 +57,7 @@ class SearchReplaceView(BrowserView):
 
     def do_replace(self):
         """ starting in the root, working through all language paths """
-        if not self.search_text: 
+        if not self.search_text:
             return
         context = Acquisition.aq_inner(self.context)
         portal_languages = getToolByName(context, 'portal_languages')
@@ -66,7 +66,7 @@ class SearchReplaceView(BrowserView):
         portal = portal_url.getPortalObject()
         portal_catalog = getToolByName(context, 'portal_catalog')
         if hasattr(portal_catalog, 'getZCatalog'):
-            portal_catalog = portal_catalog.getZCatalog()        
+            portal_catalog = portal_catalog.getZCatalog()
         portal_path = "/".join(portal.getPhysicalPath())
         out = StringIO.StringIO()
 
@@ -78,7 +78,7 @@ class SearchReplaceView(BrowserView):
         # If translations have different ids, they won't be found this way.
         if self.recursive:
             if self.alllangs:
-                # locate the language component in the path, if we have one. 
+                # locate the language component in the path, if we have one.
                 # If there is one, it is exactly below the portal path
                 pathelems = self.path.split("/")
                 langidx = len(portal.getPhysicalPath())
@@ -110,8 +110,8 @@ class SearchReplaceView(BrowserView):
             else:
                 results = [context]
 
-        params = dict(search=self.search_text, 
-            replace=self.replace_text, 
+        params = dict(search=self.search_text,
+            replace=self.replace_text,
             regexp=self.regexp,
             re_I=self.re_I,
             re_S=self.re_S,
@@ -127,7 +127,7 @@ class SearchReplaceView(BrowserView):
                     continue
             else:
                 ob = result
-                
+
             state = False
 
             changed = SR.apply(ob, params)
@@ -145,13 +145,13 @@ def _getRichTextFields(object):
 
 
 class SearchReplace:
-    """ The Search & Replace Transforms can search for a given string and replace it by another string. 
+    """ The Search & Replace Transforms can search for a given string and replace it by another string.
     The matching can bei either literal or use regular expressions.
     """
     def apply(self, object, params={}):
         """ apply a Search & Replace on the content of an object """
         state = False
-        # Describes if a pattern has been found in this object. 
+        # Describes if a pattern has been found in this object.
         # If it has been found it'll also be replaced, so we can use this for both search and replace mode.
         srch = params.get('search')
         rep = params.get('replace')
@@ -230,21 +230,21 @@ class SearchReplace:
             ntext = ntitle = ndescription = ''
             fields = _getRichTextFields(object)
             state = False
-            
+
             for field in fields:
                 text = field.getRaw(object)
                 ntext, changed = method(text)
                 state = state or changed
                 if changed:
                     field.set(object, ntext)
-                
+
             title = object.Title()
             ntitle, changed  = method(title)
             state = state or changed
             if changed:
                 object.setTitle(ntitle)
-                
-            description = object.Description()            
+
+            description = object.Description()
             ndescription, changed = method(description)
             state = state or changed
             if changed:
@@ -261,8 +261,8 @@ class SearchReplace:
             state = state or changed
             if changed:
                 object.setTitle(ntitle)
-                
-            description = object.Description()            
+
+            description = object.Description()
             ndescription, changed = method(description)
             state = state or changed
             if changed:
@@ -274,19 +274,19 @@ class SearchReplace:
             state = False
             ntitle = ndescription = ''
             ndata = ''
-            
+
             title = object.Title()
             ntitle, changed  = method(title)
             state = state or changed
             if changed:
                 object.setTitle(ntitle)
-                
-            description = object.Description()            
+
+            description = object.Description()
             ndescription, changed = method(description)
             state = state or changed
             if changed:
                 object.setDescription(ndescription)
-    
+
             if object.getContentType().startswith('text/'):
                 data = str(object.getFile().data)
                 ndata, changed = method(data)
