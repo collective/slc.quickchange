@@ -1,6 +1,0 @@
-[validators]
-validators=
-
-[actions]
-action.failure=traverse_to:string:search_replace_form
-action.success=traverse_to:string:search_replace_form

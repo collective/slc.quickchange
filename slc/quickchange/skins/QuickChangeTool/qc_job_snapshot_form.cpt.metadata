@@ -1,9 +1,0 @@
-[default]
-title=QuickChange Select Objects Form: Wizard Step 2
-
-[validators]
-
-[actions]
-action.success..Next=redirect_to:string:qc_job_controlselection_form
-action.success..Back=redirect_to:string:qc_job_select_form
-action.failure=traverse_to:string:qc_job_snapshot_form

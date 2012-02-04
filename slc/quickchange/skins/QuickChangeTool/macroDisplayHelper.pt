@@ -1,6 +1,0 @@
-<div tal:omit-tag="" 
-     tal:define="tmpl options/tmpl | nothing; m options/m | nothing;
-                widgetpath string:here/${tmpl}/macros/${m}" >
-<metal:block metal:use-macro="python:path(widgetpath)" />
-</div>
-                
