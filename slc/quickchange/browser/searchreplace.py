@@ -7,7 +7,6 @@ from types import UnicodeType, StringType
 from Products.Archetypes.public import RichWidget
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.AdvancedQuery import And, Or, In, Eq
 
 
 class SearchReplaceView(BrowserView):
@@ -71,7 +70,7 @@ class SearchReplaceView(BrowserView):
 
         SR = SearchReplace()
 
-        query = Or()
+        query = dict()
         queries = []
         # Recursive means: do a catalog query, based on paths
         # If translations have different ids, they won't be found this way.
@@ -88,14 +87,14 @@ class SearchReplaceView(BrowserView):
                     for lang in langs:
                         langpath = "%s/%s/%s" %(portal_path, lang, "/".join(relpathelems))
                         langpaths.append(langpath)
-                    query = In('path', langpaths) 
+                    query['path'] = langpaths
                 else:
                     # no language branch, use the current path
-                    query = Eq('path', self.path)
+                    query['path'] = self.path
             else:
-                query = Eq('path', self.path)
+                query['path'] = self.path
 #            print str(query)
-            results = portal_catalog.evalAdvancedQuery(query)
+            results = portal_catalog(query)
         else:
             # A non-recursive search for all language version uses LinguaPlone's getTranslation.
             # Here we are independent of paths / ids.
