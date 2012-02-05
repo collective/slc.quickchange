@@ -31,8 +31,8 @@ And there are two actions:
 - Search only: will list all matching documents found, nothing gets modified
 - Replace: do the actual replacement
 
-Example for regex
------------------
+Examples for regex
+------------------
 
 Imagine you have to change URLs that point to an old domain. Plus, the site
 structure has changed, so you need to re-order the elements of the path.
@@ -58,7 +58,27 @@ For the replacement term, we use::
 That means, as first element after the domain, we take the second bracket (the language folder),
 then the first, and lastly the third.
 
-If this confuses you, look at the regex documentation :-)
+Instead of numbers, you can also use named backreferences. This makes sense when a numbered
+backreference collides with the code of a symbol. Suppose you want to replace the number 12,500
+with 13,000 and also allow for the fact that other languages may use "." as delimiter. The
+regex for search::
+
+  12(\.|,)500
+
+and replace::
+
+  13\1000
+
+will not yield the desired result, since "\\100" is interpreted as '@'. A named backreference
+prevents this. Example for the search pattern::
+
+  12(?P<delim>\.|,)500
+
+and the corresponding replacement pattern::
+
+  13\g<delim>000
+
+If in doubt, look at the regex documentation :-)
 
 Requirements and Installation
 =============================
