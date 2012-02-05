@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
+import os
 import re
 import Acquisition
 import StringIO
-from Products.CMFCore.utils import getToolByName
-from Acquisition import aq_base, aq_parent, aq_inner
-import os
-from types import UnicodeType, StringType
+from Products.Archetypes.utils import shasattr
 from Products.Archetypes.public import RichWidget
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from types import UnicodeType, StringType
 
 
 class SearchReplaceView(BrowserView):
@@ -48,11 +48,11 @@ class SearchReplaceView(BrowserView):
 
         if len(self.changed):
             if self.search_only:
-                message = u"The following objects would be found by your "
-                "query (see below)"
+                message = u"The following objects would be found by your " \
+                u"query (see below)"
             else:
-                message = u"The following objects were fixed according to "
-                "your query (see below)"
+                message = u"The following objects were fixed according to " \
+                u"your query (see below)"
             plone_utils = getToolByName(self.context, 'plone_utils')
             plone_utils.addPortalMessage(message)
         return self.template()
@@ -135,7 +135,7 @@ class SearchReplaceView(BrowserView):
                 ob = result
 
             state = False
-
+            text_format = shasattr(ob, 'text_format') and ob.text_format or ''
             changed = SR.apply(ob, params)
             state = state or changed
 
@@ -143,6 +143,8 @@ class SearchReplaceView(BrowserView):
                 obpath = "/".join(ob.getPhysicalPath())
                 oburl = ob.absolute_url()
                 self.changed.append(oburl)
+                if text_format:
+                    ob.setFormat(text_format)
 
 
 def _getRichTextFields(object):
@@ -165,7 +167,7 @@ class SearchReplace:
         srch = params.get('search')
         rep = params.get('replace')
         search_only = params.get('search_only')
-        ob = aq_base(object)
+        ob = Acquisition.aq_base(object)
         regexp = params.get('regexp', 0)
 
         if type(srch) != UnicodeType:
