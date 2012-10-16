@@ -1,5 +1,5 @@
-slc.quickchange
-***************
+Project desciption
+******************
 
 .. contents::
 
@@ -10,7 +10,7 @@ slc.quickchange
    - questions/comments feedback mail
 
 
-- Code repository: https://svn.syslab.com/svn/syslabcom/slc.quickchange/
+- Code repository: https://github.com/collective/slc.quickchange/
 - Questions and comments to info (at) syslab (dot) com
 
 Search and Replace for Plone
