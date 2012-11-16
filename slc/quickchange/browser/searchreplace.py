@@ -235,9 +235,9 @@ class SearchReplace:
         if regexp:
             method = sr_regexp
 
-        if ob.portal_type in ['Document', 'RichDocument', 'News Item',
-            'Event', 'Topic', 'PressRoom', 'PressRelease', 'PressClip',
-            'PressContact']:
+        if ob.portal_type in ['Document', 'HelpCenterFAQ',
+            'RichDocument', 'News Item', 'Event', 'Topic',
+            'PressRoom', 'PressRelease', 'PressClip', 'PressContact']:
             ntext = ntitle = ndescription = ''
             fields = _getRichTextFields(object)
             state = False
