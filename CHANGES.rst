@@ -1,10 +1,16 @@
 slc.quickchange Changelog
 =========================
 
-2.0.2 (unreleased)
+2.0.3 (unreleased)
 ------------------
 
 - Nothing changed yet.
+
+
+2.0.2 (2012-11-16)
+------------------
+
+- Enable search-replace for HelpCenterFAQ too [deroiste]
 
 
 2.0.1 (2012-02-05)
